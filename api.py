@@ -5,9 +5,19 @@ Streams real-time transcriptions to the user over the internet.
 """
 from fastapi import FastAPI
 from fastapi.responses import StreamingResponse
+from fastapi.middleware.cors import CORSMiddleware
 import subprocess
 
 app = FastAPI()
+
+# Enable CORS: Allow frontend (http://127.0.0.1:8001) to access backend (http://127.0.0.1:8000)
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],  # Allow requests from any origin (use ["http://127.0.0.1:8001"] for stricter security)
+    allow_credentials=True,
+    allow_methods=["*"],  # Allow all HTTP methods (GET, POST, etc.)
+    allow_headers=["*"],  # Allow all headers
+)
 
 WHISPER_BINARY = "./whisper.cpp-1.7.4/build/bin/whisper-stream"
 WHISPER_MODEL = "whisper.cpp-1.7.4/models/ggml-base.en.bin"
