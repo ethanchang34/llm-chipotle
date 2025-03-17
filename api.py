@@ -15,7 +15,7 @@ WHISPER_MODEL = "whisper.cpp-1.7.4/models/ggml-base.en.bin"
 def stream_transcriptions():
     """Runs whisper-stream and streams live transcriptions."""
     process = subprocess.Popen(
-        [WHISPER_BINARY, "-m", WHISPER_MODEL, "--capture", "2", "-t", "8", "--step", "500", "--length", "5000"],
+        [WHISPER_BINARY, "-m", WHISPER_MODEL, "-t", "8", "--step", "500", "--length", "5000"],
         stdout=subprocess.PIPE,
         stderr=subprocess.PIPE,
         text=True,
