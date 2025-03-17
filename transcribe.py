@@ -1,3 +1,9 @@
+"""
+Standalone script
+Runs Whisper directly from Python.
+Starts whisper-stream and prints live transcriptions to the terminal.
+Manually run from the terminal for quick testing and debugging
+"""
 import subprocess
 
 WHISPER_MODEL = "whisper.cpp-1.7.4/models/ggml-base.en.bin"
