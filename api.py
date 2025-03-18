@@ -7,6 +7,7 @@ from fastapi import FastAPI
 from fastapi.responses import StreamingResponse
 from fastapi.middleware.cors import CORSMiddleware
 import subprocess
+import re
 
 app = FastAPI()
 
@@ -22,8 +23,12 @@ app.add_middleware(
 WHISPER_BINARY = "./whisper.cpp-1.7.4/build/bin/whisper-stream"
 WHISPER_MODEL = "whisper.cpp-1.7.4/models/ggml-base.en.bin"
 
+def clean_transcription(text):
+    """Removes unwanted ANSI escape sequences like '[2K' from Whisper output."""
+    return re.sub(r"\[\d+[A-Za-z]", "", text).strip()
+
 def stream_transcriptions():
-    """Runs whisper-stream and streams live transcriptions."""
+    """Runs whisper-stream and streams cleaned live transcriptions."""
     process = subprocess.Popen(
         [WHISPER_BINARY, "-m", WHISPER_MODEL, "-t", "8", "--step", "500", "--length", "5000"],
         stdout=subprocess.PIPE,
@@ -35,7 +40,9 @@ def stream_transcriptions():
 
     try:
         for line in iter(process.stdout.readline, ""):
-            yield f"data: {line.strip()}\n\n"  # Formats as Server-Sent Events (SSE)
+            cleaned_text = clean_transcription(line)
+            if cleaned_text:  # Only send non-empty transcriptions
+                yield f"data: {cleaned_text}\n\n"
     finally:
         process.terminate()
 
