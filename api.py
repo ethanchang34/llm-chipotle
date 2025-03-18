@@ -23,9 +23,29 @@ app.add_middleware(
 WHISPER_BINARY = "./whisper.cpp-1.7.4/build/bin/whisper-stream"
 WHISPER_MODEL = "whisper.cpp-1.7.4/models/ggml-base.en.bin"
 
+# Chipotle menu items for basic NLP filtering
+MENU_ITEMS = [
+    "bowl", "burrito", "tacos", "quesadilla", "salad",
+    "chicken", "steak", "barbacoa", "carnitas", "sofritas", "veggie",
+    "white rice", "brown rice", "black beans", "pinto beans",
+    "fajita veggies", "cheese", "sour cream", "guacamole", "lettuce",
+    "mild salsa", "medium salsa", "hot salsa", "corn salsa",
+    "extra", "double", "no"
+]
+
+def extract_order(text):
+    """Extracts Chipotle menu items from transcriptions."""
+    words = text.lower().split()
+    order_items = [word for word in words if word in MENU_ITEMS]
+
+    return " ".join(order_items) if order_items else None
+
 def clean_transcription(text):
-    """Removes unwanted ANSI escape sequences like '[2K' from Whisper output."""
-    return re.sub(r"\[\d+[A-Za-z]", "", text).strip()
+    """Removes unwanted artifacts like '[2K', '[BLANK_AUDIO]', and ANSI escape sequences."""
+    text = re.sub(r"\[\d+[A-Za-z]", "", text)  # Remove ANSI escape sequences
+    text = re.sub(r"\[BLANK_AUDIO\]", "", text, flags=re.IGNORECASE)  # Remove blank audio markers
+    text = text.replace("\x1b", "").strip()  # Remove escape characters
+    return text if text else None  # Return None for empty strings
 
 def stream_transcriptions():
     """Runs whisper-stream and streams cleaned live transcriptions."""
@@ -42,7 +62,8 @@ def stream_transcriptions():
         for line in iter(process.stdout.readline, ""):
             cleaned_text = clean_transcription(line)
             if cleaned_text:  # Only send non-empty transcriptions
-                yield f"data: {cleaned_text}\n\n"
+                extracted_order = extract_order(cleaned_text)
+                yield f"data: {extracted_order if extracted_order else cleaned_text}\n\n"
     finally:
         process.terminate()
 
