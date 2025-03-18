@@ -91,33 +91,6 @@ def extract_transcription_info(text):
 
     return None
 
-# def extract_transcription_info(text):
-#     """Extracts transcription ID, timestamps, and text from Whisper messages."""
-#     start_match = re.match(r"### Transcription (\d+) START \| t0 = (\d+) ms \| t1 = (\d+) ms", text)
-#     end_match = re.match(r"### Transcription (\d+) END", text)
-#     actual_text_match = re.search(r"\[\d\d:\d\d:\d\d\.\d\d\d --> \d\d:\d\d:\d\d\.\d\d\d\] (.+)", text)
-
-#     if start_match:
-#         trans_id = int(start_match.group(1))
-#         t0, t1 = int(start_match.group(2)), int(start_match.group(3))
-#         transcription_buffer[trans_id] = {"t0": t0, "t1": t1, "text": ""}
-    
-#     elif actual_text_match:
-#         extracted_text = actual_text_match.group(1)
-#         if transcription_buffer:
-#             last_trans_id = max(transcription_buffer.keys())  # Get most recent transcription ID
-#             transcription_buffer[last_trans_id]["text"] += " " + extracted_text.strip()
-
-#     elif end_match:
-#         trans_id = int(end_match.group(1))
-#         if trans_id in transcription_buffer:
-#             final_text = transcription_buffer[trans_id]["text"].strip()
-#             del transcription_buffer[trans_id]  # Remove completed entry
-#             return final_text
-
-#     return None
-
-
 def stream_transcriptions():
     """Runs whisper-stream and streams cleaned live transcriptions."""
     process = subprocess.Popen(
@@ -143,14 +116,6 @@ def stream_transcriptions():
                     else:
                         message = json.dumps(updates)
                         yield f"data: {message}\n\n"
-            # final_text = extract_transcription_info(line)
-            # if final_text:
-            #         if is_noise(final_text):
-            #             message = json.dumps({"text": final_text, "noise": True})
-            #             yield f"data: {message}\n\n"
-            #         else:
-            #             message = json.dumps({"text": final_text, "noise": False})
-            #             yield f"data: {message}\n\n"
     finally:
         process.terminate()
 
