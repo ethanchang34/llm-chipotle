@@ -12,7 +12,7 @@ WHISPER_BINARY = "./whisper.cpp-1.7.4/build/bin/whisper-stream"
 def transcribe_live():
     """Runs whisper-stream and captures live transcription output."""
     process = subprocess.Popen(
-        [WHISPER_BINARY, "-m", WHISPER_MODEL, "-t", "8", "--step", "500", "--length", "5000"],
+        [WHISPER_BINARY, "-m", WHISPER_MODEL, "-t", "8", "--step", "0", "--length", "5000", "-vth", "0.6"],
         stdout=subprocess.PIPE,
         stderr=subprocess.PIPE,
         text=True
