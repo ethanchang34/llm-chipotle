@@ -3,9 +3,11 @@ Runs Whisper inside a web API.
 Lets other apps (frontend, mobile, other programs) request transcriptions via HTTP.
 Streams real-time transcriptions to the user over the internet.
 """
+import os
 from fastapi import FastAPI
 from fastapi.responses import StreamingResponse
 from fastapi.middleware.cors import CORSMiddleware
+import openai
 import subprocess
 import json
 import re
@@ -24,9 +26,36 @@ app.add_middleware(
 WHISPER_BINARY = "./whisper.cpp-1.7.4/build/bin/whisper-stream"
 WHISPER_MODEL = "whisper.cpp-1.7.4/models/ggml-base.en.bin"
 
+# Retrieve API key securely
+OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
+if not OPENAI_API_KEY:
+    raise ValueError("OPENAI_API_KEY not found! Set it in your environment variables.")
+
+openai.api_key = OPENAI_API_KEY
+
 transcription_buffer = {}  # Stores ongoing transcriptions
 transcription_segments = {}  # Stores spoken text
 noise_segments = []  # Stores non-verbal noises
+
+def send_to_llm(text, model="gpt-4-turbo"):
+    """Sends transcription to a large LLM (GPT-4 or Gemini) to extract structured orders."""
+    prompt = f"""
+    Extract the order from this conversation and format it as JSON.
+    User: "{text}"
+    Output format:
+    {{
+        "item": "<food_item>",
+        "ingredients": ["ingredient1", "ingredient2", ...]
+    }}
+    """
+
+    if model.startswith("gpt"):
+        response = openai.ChatCompletion.create(
+            model=model,
+            messages=[{"role": "user", "content": prompt}]
+        )
+        return json.loads(response["choices"][0]["message"]["content"])
+
 
 def clean_transcription(text):
     """Removes unwanted artifacts like '[2K', '[BLANK_AUDIO]', and ANSI escape sequences."""
@@ -94,7 +123,7 @@ def extract_transcription_info(text):
 def stream_transcriptions():
     """Runs whisper-stream and streams cleaned live transcriptions."""
     process = subprocess.Popen(
-        [WHISPER_BINARY, "-m", WHISPER_MODEL, "-t", "8", "--step", "0", "--length", "120000", "-vth", "1.6"],
+        [WHISPER_BINARY, "-m", WHISPER_MODEL, "-t", "8", "--step", "0", "--length", "130000", "-vth", "1.6"],
         stdout=subprocess.PIPE,
         stderr=subprocess.PIPE,
         text=True,

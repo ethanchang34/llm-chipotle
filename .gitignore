@@ -1,0 +1,3 @@
+# Ignore local environment variables
+local-env.sh
+.env
