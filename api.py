@@ -11,9 +11,7 @@ import openai
 import subprocess
 import json
 import re
-# TODO: modify stream_transcriptions() to call send_to_llm() and send response to script.ts
-# TODO: modify script.ts to show extracted features
-# TODO: add div in index.html for extracted features
+# TODO: get new openai api key
 
 app = FastAPI()
 
