@@ -43,7 +43,7 @@ noise_segments = []  # Stores non-verbal noises
 def send_to_llm(text, model="gpt-4-turbo"):
     """Sends transcription to a large LLM (GPT-4 or Gemini) to extract structured orders."""
     prompt = f"""
-    Extract the order from this conversation and format it as JSON.
+    Extract the food order from this conversation and format it as JSON.
     User: "{text}"
     Output format:
     {{
@@ -137,7 +137,9 @@ def stream_transcriptions():
     try:
         for line in iter(process.stdout.readline, ""):
             cleaned_text = clean_transcription(line)
+            llm_response = send_to_llm(line, model="gpt-4-turbo")
 
+            # Send live transcriptions to frontend
             if cleaned_text:
                 updates = extract_transcription_info(cleaned_text)
                 if updates:
@@ -148,6 +150,11 @@ def stream_transcriptions():
                     else:
                         message = json.dumps(updates)
                         yield f"data: {message}\n\n"
+
+            # Send llm-extracted order to frontend
+            if llm_response:
+                message = json.dumps({"order": llm_response})
+                yield f"data: {message}\n\n"
     finally:
         process.terminate()
 

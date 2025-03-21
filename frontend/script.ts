@@ -1,15 +1,24 @@
 const orderDiv = document.getElementById("order") as HTMLDivElement;
 const noisesDiv = document.getElementById("noises") as HTMLDivElement;
+const orderSummaryDiv = document.getElementById("order-summary") as HTMLDivElement;
 
-if (orderDiv && noisesDiv) {
+if (orderDiv && noisesDiv && orderSummaryDiv) {
     // Connect to the FastAPI stream
     const eventSource = new EventSource("http://127.0.0.1:8000/transcribe");
 
     eventSource.onmessage = (event: MessageEvent) => {
         const data = JSON.parse(event.data);
         const newSegment = data.text;
+        let latestOrder: any = null; // Stores latest structured order
 
-        if (data.noise) {
+        if (data.order) {
+            latestOrder = data.order;
+            orderSummaryDiv.innerHTML = `
+                <strong>Item:</strong> ${latestOrder.item} <br>
+                <strong>Ingredients:</strong> ${latestOrder.ingredients.join(", ")}
+            `;
+        }
+        else if (data.noise) {
             noisesDiv.innerText = newSegment
         } else {
             orderDiv.innerText = newSegment
