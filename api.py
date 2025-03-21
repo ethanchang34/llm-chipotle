@@ -34,7 +34,8 @@ OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
 if not OPENAI_API_KEY:
     raise ValueError("OPENAI_API_KEY not found! Set it in your environment variables.")
 
-openai.api_key = OPENAI_API_KEY
+# openai.api_key = OPENAI_API_KEY
+client = openai.OpenAI(api_key=OPENAI_API_KEY)
 
 transcription_buffer = {}  # Stores ongoing transcriptions
 transcription_segments = {}  # Stores spoken text
@@ -52,12 +53,18 @@ def send_to_llm(text, model="gpt-4-turbo"):
     }}
     """
 
-    if model.startswith("gpt"):
-        response = openai.ChatCompletion.create(
-            model=model,
-            messages=[{"role": "user", "content": prompt}]
-        )
-        return json.loads(response["choices"][0]["message"]["content"])
+    response = client.chat.completions.create(
+        model=model,
+        messages=[{"role": "user", "content": prompt}]
+    )
+
+    return json.loads(response.choices[0].message.content)
+
+    # response = openai.ChatCompletion.create(
+    #     model=model,
+    #     messages=[{"role": "user", "content": prompt}]
+    # )
+    # return json.loads(response["choices"][0]["message"]["content"])
 
 
 def clean_transcription(text):
