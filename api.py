@@ -39,7 +39,7 @@ transcription_buffer = {}  # Stores ongoing transcriptions
 transcription_segments = {}  # Stores spoken text
 noise_segments = []  # Stores non-verbal noises
 
-def send_to_llm(text, model="gpt-4-turbo"):
+def send_to_llm(text, model="gpt-4o"):
     """Sends transcription to a large LLM (GPT-4 or Gemini) to extract structured orders."""
     prompt = f"""
     Extract the food order from this conversation and format it as JSON.
@@ -142,7 +142,7 @@ def stream_transcriptions():
     try:
         for line in iter(process.stdout.readline, ""):
             cleaned_text = clean_transcription(line)
-            llm_response = send_to_llm(line, model="gpt-4-turbo")
+            llm_response = send_to_llm(line, model="gpt-4o")
 
             # Send live transcriptions to frontend
             if cleaned_text:
