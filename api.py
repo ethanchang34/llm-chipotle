@@ -11,7 +11,8 @@ import openai
 import subprocess
 import json
 import re
-# TODO: get new openai api key
+# TODO: rethink structure
+# TODO: Throttle api calls to every 5 seconds
 
 app = FastAPI()
 
@@ -39,8 +40,8 @@ transcription_buffer = {}  # Stores ongoing transcriptions
 transcription_segments = {}  # Stores spoken text
 noise_segments = []  # Stores non-verbal noises
 
-def send_to_llm(text, model="gpt-4o"):
-    """Sends transcription to a large LLM (GPT-4 or Gemini) to extract structured orders."""
+def send_to_llm(text, model="gpt-3.5-turbo"):
+    """Sends transcription to a large LLM to extract structured orders."""
     prompt = f"""
     Extract the food order from this conversation and format it as JSON.
     User: "{text}"
@@ -142,7 +143,9 @@ def stream_transcriptions():
     try:
         for line in iter(process.stdout.readline, ""):
             cleaned_text = clean_transcription(line)
-            llm_response = send_to_llm(line, model="gpt-4o")
+            if not cleaned_text.strip():
+                continue
+            llm_response = send_to_llm(cleaned_text)
 
             # Send live transcriptions to frontend
             if cleaned_text:
