@@ -5,6 +5,8 @@ from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 import requests
 
+# TODO: prime the llm with prompts to reduce output size and clarify goal (extract order)
+
 app = FastAPI()
 
 # Allow frontend dev on localhost
