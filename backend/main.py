@@ -21,8 +21,19 @@ app.add_middleware(
 OLLAMA_URL = "http://localhost:11434/api/chat"
 MODEL_NAME = "mistral"
 
+# Static system prompt to guide the LLM
+SYSTEM_PROMPT = {
+    "role": "system",
+    "content": (
+        "You are a fast, friendly Chipotle ordering assistant. "
+        "Only help users place an order from the Chipotle menu. "
+        "Keep replies short and structured. Never explain. "
+        "Only confirm or ask clarifying questions. Keep responses under 20 words."
+    )
+}
+
 # Track ongoing conversation (in-memory for now)
-conversation_history = []
+conversation_history = [SYSTEM_PROMPT]
 
 class Message(BaseModel):
     message: str
