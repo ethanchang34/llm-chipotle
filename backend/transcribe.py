@@ -8,6 +8,8 @@ from fastapi import APIRouter
 from fastapi.responses import StreamingResponse
 from llm import send_to_llm  # assumes this function exists in main.py
 
+# TODO: use previous whisper-stream method. replace div on frontend until complete msg formed
+
 router = APIRouter()
 
 WHISPER_BINARY = "../whisper.cpp-1.7.4/build/bin/whisper-stream"
@@ -67,6 +69,7 @@ def stream_transcription_and_reply():
             # If 1.5s has passed since last input, consider user done
             if buffer and (time.time() - last_spoken > 1.5):
                 print("1.5 seconds of silence")
+                print(buffer)
                 full_text = " ".join(buffer).strip()
                 buffer.clear()
 
@@ -75,7 +78,7 @@ def stream_transcription_and_reply():
                     yield f"data: {json.dumps({'reply': reply})}\n\n"
 
                 last_spoken = time.time()
-                
+
             cleaned = clean(line)
             if not cleaned or is_log(cleaned):
                 continue
