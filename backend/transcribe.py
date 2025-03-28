@@ -54,6 +54,9 @@ def stream_transcription_and_reply():
 
     buffer = []
     last_spoken = time.time()
+    last_cleaned = None
+    seen_transcripts = set()
+    MAX_HISTORY = 10
 
     try:
         for line in iter(process.stdout.readline, ""):
@@ -64,22 +67,32 @@ def stream_transcription_and_reply():
                 # full_text = " ".join(buffer).strip()
                 full_text = buffer[-1]
                 buffer.clear()
+                last_cleaned = full_text
+                seen_transcripts.add(full_text)
 
                 if full_text:
                     reply = send_to_llm(full_text)
                     yield f"data: {json.dumps({'text': full_text, 'complete': True, 'reply': reply})}\n\n"
 
                 last_spoken = time.time()
+                continue
 
             cleaned = clean(line)
-            print(cleaned)
-            print(buffer)
             if not cleaned:
                 continue
-            if cleaned:
-                buffer.append(cleaned)
-                last_spoken = time.time()
-                yield f"data: {json.dumps({'text': cleaned, 'complete': False})}\n\n"
+
+             # Ignore duplicate transcription
+            if cleaned == last_cleaned:
+                continue
+            if cleaned in seen_transcripts:
+                continue
+
+            print(cleaned)
+            print(buffer)
+            last_cleaned = cleaned
+            buffer = [cleaned]
+            last_spoken = time.time()
+            yield f"data: {json.dumps({'text': cleaned, 'complete': False})}\n\n"
 
     finally:
         process.terminate()
