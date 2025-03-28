@@ -3,9 +3,8 @@
 from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
-import requests
-
-# TODO: prime the llm with prompts to reduce output size and clarify goal (extract order)
+from transcribe import router as transcribe_router
+from llm import send_to_llm
 
 app = FastAPI()
 
@@ -18,45 +17,12 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-OLLAMA_URL = "http://localhost:11434/api/chat"
-MODEL_NAME = "mistral"
-
-# Static system prompt to guide the LLM
-SYSTEM_PROMPT = {
-    "role": "system",
-    "content": (
-        "You are a fast, friendly Chipotle ordering assistant. "
-        "Only help users place an order from the Chipotle menu. "
-        "Keep replies short and structured. Never explain. "
-        "Only confirm or ask clarifying questions. Keep responses under 20 words."
-    )
-}
-
-# Track ongoing conversation (in-memory for now)
-conversation_history = [SYSTEM_PROMPT]
+# Include the /transcribe route
+app.include_router(transcribe_router)
 
 class Message(BaseModel):
     message: str
 
 @app.post("/chat")
 def chat_with_bot(msg: Message):
-    user_input = msg.message.strip()
-    if not user_input:
-        return {"reply": "I didn't catch that. Can you repeat?"}
-
-    # Add user message to history
-    conversation_history.append({"role": "user", "content": user_input})
-
-    # Send full conversation to local LLM
-    response = requests.post(OLLAMA_URL, json={
-        "model": MODEL_NAME,
-        "messages": conversation_history,
-        "stream": False
-    })
-    response_json = response.json()
-    assistant_reply = response_json["message"]["content"].strip()
-
-    # Add assistant reply to history
-    conversation_history.append({"role": "assistant", "content": assistant_reply})
-
-    return {"reply": assistant_reply}
+    return {"reply": send_to_llm(msg.message)}
