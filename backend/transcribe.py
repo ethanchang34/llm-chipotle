@@ -15,9 +15,12 @@ WHISPER_MODEL = "../whisper.cpp-1.7.4/models/ggml-base.en.bin"
 WHISPER_ARGS = [WHISPER_BINARY, "-m", WHISPER_MODEL, "--step", "500", "--length", "5000"]
 
 def clean(text: str) -> str:
-    """Removes unwanted artifacts like '[2K', '[BLANK_AUDIO]', and ANSI escape sequences."""
+    """Removes unwanted artifacts like '[2K', '[BLANK_AUDIO]', noises in (), [], or *...*, and ANSI escape sequences."""
+    if not text:
+        return text
     text = re.sub(r"\[\d+[A-Za-z]", "", text)  # Remove ANSI escape sequences
     text = re.sub(r"\[BLANK_AUDIO\]", "", text, flags=re.IGNORECASE)  # Remove blank audio markers
+    text = re.sub(r"(\(.*?\)|\[.*?\]|\*.*?\*)", "", text) # Remove non-verbal sounds in (), [], or *...*
     text = text.replace("\x1b", "").strip()  # Remove escape characters
     return text if text else None  # Return None for empty strings
 
@@ -61,14 +64,6 @@ def stream_transcription_and_reply():
 
     try:
         for line in iter(process.stdout.readline, ""):
-            cleaned = clean(line)
-            if not cleaned or is_log(cleaned):
-                continue
-            if cleaned:
-                buffer.append(cleaned)
-                last_spoken = time.time()
-                yield f"data: {json.dumps({'text': cleaned})}\n\n"
-
             # If 1.5s has passed since last input, consider user done
             if buffer and (time.time() - last_spoken > 1.5):
                 print("1.5 seconds of silence")
@@ -80,6 +75,14 @@ def stream_transcription_and_reply():
                     yield f"data: {json.dumps({'reply': reply})}\n\n"
 
                 last_spoken = time.time()
+                
+            cleaned = clean(line)
+            if not cleaned or is_log(cleaned):
+                continue
+            if cleaned:
+                buffer.append(cleaned)
+                last_spoken = time.time()
+                yield f"data: {json.dumps({'text': cleaned})}\n\n"
 
     finally:
         process.terminate()
