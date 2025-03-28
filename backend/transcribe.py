@@ -67,7 +67,7 @@ def stream_transcription_and_reply():
 
                 if full_text:
                     reply = send_to_llm(full_text)
-                    yield f"data: {json.dumps({'reply': reply})}\n\n"
+                    yield f"data: {json.dumps({'text': full_text, 'complete': True, 'reply': reply})}\n\n"
 
                 last_spoken = time.time()
 
@@ -79,7 +79,7 @@ def stream_transcription_and_reply():
             if cleaned:
                 buffer.append(cleaned)
                 last_spoken = time.time()
-                yield f"data: {json.dumps({'text': cleaned})}\n\n"
+                yield f"data: {json.dumps({'text': cleaned, 'complete': False})}\n\n"
 
     finally:
         process.terminate()

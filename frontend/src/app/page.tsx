@@ -13,11 +13,32 @@ export default function Home() {
 
     es.onmessage = (event) => {
       const data = JSON.parse(event.data);
-      if (data.text) {
-        setMessages((prev) => [...prev, `🗣️ ${data.text}`]);
+
+      if (data.text && data.complete == false) {
+        // Replace the last message with updated incomplete text
+        setMessages((prev) => {
+          const updated = [...prev];
+          updated[updated.length-1] = `🗣️ ${data.text}`;
+          return updated;
+        });
       }
+
+      if (data.text && data.complete === true) {
+        // Finalize the last placeholder, then add a new blank message
+        setMessages((prev) => {
+          const updated = [...prev];
+          updated[updated.length - 1] = `🗣️ ${data.text}`;
+          return [...updated, ''];
+        });
+      }
+
       if (data.reply) {
-        setMessages((prev) => [...prev, `🤖 ${data.reply}`]);
+        // Finalize the last placeholder, then add a new blank message
+        setMessages((prev) => {
+          const updated = [...prev];
+          updated[updated.length - 1] = `🤖 ${data.reply}`;
+          return [...updated, ''];
+        });
       }
     };
 
@@ -26,39 +47,9 @@ export default function Home() {
       setListening(false);
     };
   };
-  // const sendMessage = async () => {
-  //   if (!input.trim()) return
 
-  //   setMessages(prev => [...prev, `🧑 ${input}`])
-
-  //   const res = await fetch('http://localhost:8000/chat', {
-  //     method: 'POST',
-  //     headers: { 'Content-Type': 'application/json' },
-  //     body: JSON.stringify({ message: input }),
-  //   })
-
-  //   const data = await res.json()
-  //   setMessages(prev => [...prev, `🤖 ${data.reply}`])
-  //   setInput('')
-  // }
 
   return (
-    // <main style={{ padding: '2rem', fontFamily: 'sans-serif' }}>
-    //   <h1>🌯 Chipotle Chatbot</h1>
-    //   <div style={{ marginBottom: '1rem' }}>
-    //     {messages.map((msg, i) => (
-    //       <div key={i}>{msg}</div>
-    //     ))}
-    //   </div>
-    //   <input
-    //     value={input}
-    //     onChange={e => setInput(e.target.value)}
-    //     onKeyDown={e => e.key === 'Enter' && sendMessage()}
-    //     placeholder="Say something..."
-    //     style={{ width: '300px', padding: '0.5rem' }}
-    //   />
-    //   <button onClick={sendMessage} style={{ marginLeft: '1rem' }}>Send</button>
-    // </main>
     <main className="p-6">
       <h1 className="text-xl font-bold mb-4">🎙️ Chipotle Voice Order</h1>
       <button
@@ -71,7 +62,13 @@ export default function Home() {
 
       <ul className="mt-6 space-y-2">
         {messages.map((m, idx) => (
-          <li key={idx} className="bg-gray-100 p-2 rounded text-black whitespace-pre-wrap">
+          <li
+            key={idx}
+            className={`p-2 rounded whitespace-pre-wrap ${
+              m.startsWith('🗣️') ? 'bg-gray-100 text-black' :
+              m.startsWith('🤖') ? 'bg-green-100 text-black' : 'text-gray-400'
+            }`}
+          >
             {m}
           </li>
         ))}
