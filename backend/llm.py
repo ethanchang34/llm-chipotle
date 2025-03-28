@@ -22,6 +22,7 @@ def send_to_llm(text: str) -> str:
     if not user_input:
         return "I didn't catch that. Can you repeat?"
 
+    # Add new input to conversation history
     conversation_history.append({"role": "user", "content": user_input})
 
     response = requests.post(OLLAMA_URL, json={
@@ -32,6 +33,7 @@ def send_to_llm(text: str) -> str:
     response_json = response.json()
     assistant_reply = response_json["message"]["content"].strip()
 
+    # ADd agent reply to conversation history
     conversation_history.append({"role": "assistant", "content": assistant_reply})
 
     return assistant_reply
