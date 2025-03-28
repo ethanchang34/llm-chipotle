@@ -1,10 +1,11 @@
 'use client';
 
+import { constants } from 'buffer';
 import { useState } from 'react';
 
 export default function Home() {
   // const [input, setInput] = useState('')
-  const [messages, setMessages] = useState<string[]>([]);
+  const [messages, setMessages] = useState<string[]>(['']);
   const [listening, setListening] = useState(false);
 
   const handleListen = () => {
