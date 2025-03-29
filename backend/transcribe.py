@@ -8,8 +8,6 @@ from fastapi import APIRouter
 from fastapi.responses import StreamingResponse
 from llm import send_to_llm  # assumes this function exists in main.py
 
-# TODO: use previous whisper-stream method. replace div on frontend until complete msg formed
-
 router = APIRouter()
 
 WHISPER_BINARY = "../whisper.cpp-1.7.4/build/bin/whisper-stream"

@@ -6,6 +6,8 @@ from pydantic import BaseModel
 from transcribe import router as transcribe_router
 from llm import send_to_llm
 
+# TODO: begin order-function writing and useState for order ingredients
+
 app = FastAPI()
 
 # Allow frontend dev on localhost
