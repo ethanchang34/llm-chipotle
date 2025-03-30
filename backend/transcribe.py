@@ -12,7 +12,6 @@ router = APIRouter()
 
 WHISPER_BINARY = "../whisper.cpp-1.7.4/build/bin/whisper-stream"
 WHISPER_MODEL = "../whisper.cpp-1.7.4/models/ggml-base.en.bin"
-# WHISPER_ARGS = [WHISPER_BINARY, "-m", WHISPER_MODEL, "--step", "500", "--length", "5000"]
 WHISPER_ARGS = [WHISPER_BINARY, "-m", WHISPER_MODEL, "-t", "8", "--step", "0", "--length", "130000", "-vth", "1.6"]
 
 
@@ -62,7 +61,6 @@ def stream_transcription_and_reply():
             if buffer and (time.time() - last_spoken > 2.5):
                 print("2.5 seconds of silence")
                 print(buffer)
-                # full_text = " ".join(buffer).strip()
                 full_text = buffer[-1]
                 buffer.clear()
                 last_cleaned = full_text

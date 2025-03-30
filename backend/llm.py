@@ -11,7 +11,8 @@ SYSTEM_PROMPT = {
         "You are a fast, friendly Chipotle ordering assistant. "
         "Only help users place an order from the Chipotle menu. "
         "Keep replies short and structured. Never explain. "
-        "Only confirm or ask clarifying questions. Keep responses under 20 words."
+        # "You don't need to repeat the order back."
+        "Only ask clarifying questions if needed. Keep responses under 20 words."
     )
 }
 
@@ -33,7 +34,7 @@ def send_to_llm(text: str) -> str:
     response_json = response.json()
     assistant_reply = response_json["message"]["content"].strip()
 
-    # ADd agent reply to conversation history
+    # Add agent reply to conversation history
     conversation_history.append({"role": "assistant", "content": assistant_reply})
 
     return assistant_reply
