@@ -1,6 +1,6 @@
 export interface OrderItem {
   id: string;
-  type: "Bowl" | "Burrito" | "Tacos" | "Salad" | "Quesadilla" | "Kid's Meal";
+  type: "Bowl" | "Burrito" | "Tacos" | "Salad" | "Quesadilla";
   protein: IngredientWithQuantity<ProteinType>;
   rice?: IngredientWithQuantity<RiceType>;
   beans?: IngredientWithQuantity<BeanType>;

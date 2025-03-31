@@ -1,39 +1,36 @@
 from typing import List, Optional, Literal
 from pydantic import BaseModel
 
+OrderType = Literal["Bowl", "Burrito", "Tacos", "Salad", "Quesadilla"]
 ProteinType = Literal["Chicken", "Steak", "Barbacoa", "Carnitas", "Sofritas", "Veggie"]
 RiceType = Literal["White", "Brown", "None"]
 BeanType = Literal["Blank", "Pinto", "None"]
-ToppingType = Literal["Lettuce", "Fajita Veggies", "Mild Salsa", "Medium Salsa", "Hot Salsa", "Corn Salsa", "Cheese", "Sour Cream", "Guacamole"]
-SideType = Literal["Chips", "Chips & Guac", "Chips & Queso"]
-DrinkType = Literal["Water", "Lemonade", "Soda"]
-Size = Literal["Small", "Medium", "Large"]
 
 class Topping(BaseModel):
-    name: ToppingType
-    quantity: Optional[int] = 1  # How many scoops/servings of this topping
+    name: Literal["Lettuce", "Fajita Veggies", "Mild Salsa", "Medium Salsa", "Hot Salsa", "Corn Salsa", "Cheese", "Sour Cream", "Guacamole"]
+    quantity: Optional[int] = 1
 
 class SideItem(BaseModel):
-    name: SideType
+    name: Literal["Chips", "Chips & Guac", "Chips & Queso"]
     quantity: Optional[int] = 1
 
 class Drink(BaseModel):
-    name: DrinkType
-    size: Optional[Size] = "Medium"
+    name: Literal["Water", "Lemonade", "Soda"]
+    size: Literal["Small", "Medium", "Large"]
     quantity: Optional[int] = 1
 
 class OrderItem(BaseModel):
     id: str
-    type: str  # "Bowl", "Burrito", etc.
+    type: OrderType
     protein: ProteinType
     protein_quantity: Optional[int] = 1 
     rice: Optional[RiceType] = None
     rice_quantity: Optional[int] = 1
     beans: Optional[BeanType] = None
     beans_quantity: Optional[int] = 1
-    toppings: Optional[List[ToppingType]] = []
-    sides: Optional[List[SideType]] = []
-    drinks: Optional[List[DrinkType]] = []
+    toppings: Optional[List[Topping]] = []
+    sides: Optional[List[SideItem]] = []
+    drinks: Optional[List[Drink]] = []
     quantity: int = 1
 
 class Cart(BaseModel):
