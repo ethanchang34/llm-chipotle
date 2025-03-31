@@ -1,19 +1,15 @@
-import { SideItem } from "./SideItem";
-
 export interface OrderItem {
-    id: string; // Unique identifier for managing edits/removals
-    type: "Bowl" | "Burrito" | "Tacos" | "Salad" | "Quesadilla" | "Kid's Meal";
-    protein: ProteinType;
-    rice?: "White" | "Brown" | "None";
-    beans?: "Black" | "Pinto" | "None";
-    toppings?: Topping[];
-    sides?: SideItem[];
-    extras?: Extra[];
-    quantity: number;
-    // instructions?: string; // Free-text like "extra crispy tortilla" or "salsa on the side"
+  id: string;
+  type: "Bowl" | "Burrito" | "Tacos" | "Salad" | "Quesadilla" | "Kid's Meal";
+  protein: IngredientWithQuantity<ProteinType>;
+  rice?: IngredientWithQuantity<RiceType>;
+  beans?: IngredientWithQuantity<BeanType>;
+  toppings?: IngredientWithQuantity<ToppingType>[];
+  sides?: IngredientWithQuantity<SideType>[];
+  drinks?: IngredientWithQuantity<DrinkType>[];
+  quantity: number;
 }
 
-// Protein options
 export type ProteinType =
   | "Chicken"
   | "Steak"
@@ -22,8 +18,9 @@ export type ProteinType =
   | "Sofritas"
   | "Veggie";
 
-// Optional toppings
-export type Topping =
+export type RiceType = "White" | "Brown" | "None";
+export type BeanType = "Black" | "Pinto" | "None";
+export type ToppingType =
   | "Lettuce"
   | "Fajita Veggies"
   | "Mild Salsa"
@@ -34,5 +31,11 @@ export type Topping =
   | "Sour Cream"
   | "Guacamole";
 
-// Extras (paid additions)
-export type Extra = "Extra Cheese" | "Extra Guac" | "Double Meat";
+export type SideType = "Chips" | "Chips & Guac" | "Chips & Queso";
+export type DrinkType = "Soda" | "Water" | "Lemonade";
+
+// Generic reusable type
+export interface IngredientWithQuantity<T = string> {
+  name: T;
+  quantity: number;
+}

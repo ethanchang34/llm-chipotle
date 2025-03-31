@@ -1,0 +1,42 @@
+{
+  "entrees": {
+    "Bowl": 9.1,
+    "Burrito": 9.1,
+    "Tacos": 9.1,
+    "Salad": 9.1,
+    "Quesadilla": 9.6,
+    "Kid's Meal": 5.0
+  },
+  "proteins": {
+    "Chicken": 0.0,
+    "Steak": 0.75,
+    "Barbacoa": 0.75,
+    "Carnitas": 0.5,
+    "Sofritas": 0.0,
+    "Veggie": 0.0
+  },
+  "toppings": {
+    "Lettuce": 0.0,
+    "Fajita Veggies": 0.0,
+    "Mild Salsa": 0.0,
+    "Medium Salsa": 0.0,
+    "Hot Salsa": 0.0,
+    "Corn Salsa": 0.0,
+    "Cheese": 0.0,
+    "Sour Cream": 0.0,
+    "Guacamole": 2.65
+  },
+  "sides": {
+    "Chips": 1.95,
+    "Chips & Guac": 4.25,
+    "Chips & Queso": 4.25,
+    "Drink (Small)": 2.0,
+    "Drink (Medium)": 2.5,
+    "Drink (Large)": 2.75
+  },
+  "extras": {
+    "Extra Cheese": 1.0,
+    "Extra Guac": 2.65,
+    "Double Meat": 3.0
+  }
+}
