@@ -1,5 +1,5 @@
 from pydantic_ai import Agent, RunContext
-from order.models import Cart, Menu, OrderItem
+from order.models import Cart, Menu, OrderItem, Drink
 from order import cart_operations as ops
 from dataclasses import dataclass
 
@@ -16,6 +16,10 @@ order_agent = Agent(
     Use the available menu options to assist them with building an accurate order.
     """
 )
+
+@order_agent.tool
+def add_drink(ctx: RunContext[OrderAgentDeps], drink: Drink):
+    cart = ops.add_drink(drink)
 
 @order_agent.tool
 def view_cart(ctx: RunContext[OrderAgentDeps]) -> Cart:

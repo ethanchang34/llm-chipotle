@@ -1,75 +1,96 @@
 from typing import Optional
-from models import Cart, OrderItem, IngredientWithQuantity, ProteinType, RiceType, BeanType, ToppingType, SideType, ExtraType, DrinkType
+from models import Cart, Entree, Side, Drink
 import uuid
 
+# Add entree to cart
+# Add side to cart
+# Add drink to cart
 
-def add_entree_to_cart(cart: Cart, entree_type: str, quantity: int = 1) -> int:
-    """Add an empty entree to the cart. Other fields like protein/toppings can be set later."""
-    entree = OrderItem(
-        id=str(uuid.uuid4()),
-        type=entree_type,
-        quantity=quantity,
-        protein=None,
-        rice=None,
-        beans=None,
-        toppings=[],
-        sides=[],
-        extras=[],
-        drinks=[],
-    )
-    cart.items.append(entree)
-    return len(cart.items) - 1
+def add_drink(cart: Cart, drink: Drink):
+    """Add a drink to the cart"""
+    for d in cart.drinks:
+        if d.name == drink.name and d.size == drink.size:
+            d.quantity += drink.quantity
+            break
+    else:
+        cart.drinks.append(drink)
+    print(f"Added {drink.quantity} {drink.size} {drink.name}(s) to the cart.")
+    return cart
 
+def remove_drink(cart: Cart, drink: Drink):
+    """Remove a drink from the cart"""
+    for d in cart.drinks:
+        if d.name == drink.name and d.size == d.size:
+            d.quantity -= drink.quantity
+            if d.quantity <= 0:
+                cart.drinks.remove(d)
+                print(f"Removed drink '{d.name}' ({d.size}) from cart.")
+            else:
+                print(f"Decreased quantity of '{d.name}' ({d.size}) to {d.quantity}.")
+            break
+    else:
+        print(f"[WARN] Drink '{drink.name}' ({drink.size}) not found in cart.")
+    return cart
 
-def set_protein(cart: Cart, item_index: int, protein: ProteinType, quantity: int = 1):
-    item = _get_item(cart, item_index)
-    item.protein = IngredientWithQuantity(name=protein, quantity=quantity)
-
-
-def set_rice(cart: Cart, item_index: int, rice: RiceType, quantity: int = 1):
-    item = _get_item(cart, item_index)
-    item.rice = IngredientWithQuantity(name=rice, quantity=quantity)
-
-
-def set_beans(cart: Cart, item_index: int, beans: BeanType, quantity: int = 1):
-    item = _get_item(cart, item_index)
-    item.beans = IngredientWithQuantity(name=beans, quantity=quantity)
-
-
-def add_topping(cart: Cart, item_index: int, topping: ToppingType, quantity: int = 1):
-    item = _get_item(cart, item_index)
-    _add_or_update(item.toppings, topping, quantity)
-
-
-def add_side(cart: Cart, item_index: int, side: SideType, quantity: int = 1):
-    item = _get_item(cart, item_index)
-    _add_or_update(item.sides, side, quantity)
-
-
-def add_extra(cart: Cart, item_index: int, extra: ExtraType, quantity: int = 1):
-    item = _get_item(cart, item_index)
-    _add_or_update(item.extras, extra, quantity)
-
-
-def add_drink(cart: Cart, item_index: int, drink: DrinkType, quantity: int = 1):
-    item = _get_item(cart, item_index)
-    _add_or_update(item.drinks, drink, quantity)
+# -------------temp non-functional functinos below --------------
+# def add_entree_to_cart(cart: Cart, entree_type: str, quantity: int = 1) -> int:
+#     """Add an empty entree to the cart. Other fields like protein/toppings can be set later."""
+#     entree = OrderItem(
+#         id=str(uuid.uuid4()),
+#         type=entree_type,
+#         quantity=quantity,
+#         protein=None,
+#         rice=None,
+#         beans=None,
+#         toppings=[],
+#         sides=[],
+#         extras=[],
+#         drinks=[],
+#     )
+#     cart.items.append(entree)
+#     return len(cart.items) - 1
 
 
-def remove_item(cart: Cart, item_index: int):
-    if 0 <= item_index < len(cart.items):
-        cart.items.pop(item_index)
+# def set_protein(cart: Cart, item_index: int, protein: ProteinType, quantity: int = 1):
+#     item = _get_item(cart, item_index)
+#     item.protein = IngredientWithQuantity(name=protein, quantity=quantity)
 
 
-def _get_item(cart: Cart, index: int) -> OrderItem:
-    if index < 0 or index >= len(cart.items):
-        raise IndexError("Item index out of bounds")
-    return cart.items[index]
+# def set_rice(cart: Cart, item_index: int, rice: RiceType, quantity: int = 1):
+#     item = _get_item(cart, item_index)
+#     item.rice = IngredientWithQuantity(name=rice, quantity=quantity)
 
 
-def _add_or_update(ingredients_list: list, name: str, quantity: int):
-    for item in ingredients_list:
-        if item.name == name:
-            item.quantity = quantity
-            return
-    ingredients_list.append(IngredientWithQuantity(name=name, quantity=quantity))
+# def set_beans(cart: Cart, item_index: int, beans: BeanType, quantity: int = 1):
+#     item = _get_item(cart, item_index)
+#     item.beans = IngredientWithQuantity(name=beans, quantity=quantity)
+
+
+# def add_topping(cart: Cart, item_index: int, topping: ToppingType, quantity: int = 1):
+#     item = _get_item(cart, item_index)
+#     _add_or_update(item.toppings, topping, quantity)
+
+
+# def add_side(cart: Cart, item_index: int, side: SideType, quantity: int = 1):
+#     item = _get_item(cart, item_index)
+#     _add_or_update(item.sides, side, quantity)
+
+
+
+# def remove_item(cart: Cart, item_index: int):
+#     if 0 <= item_index < len(cart.items):
+#         cart.items.pop(item_index)
+
+
+# def _get_item(cart: Cart, index: int) -> OrderItem:
+#     if index < 0 or index >= len(cart.items):
+#         raise IndexError("Item index out of bounds")
+#     return cart.items[index]
+
+
+# def _add_or_update(ingredients_list: list, name: str, quantity: int):
+#     for item in ingredients_list:
+#         if item.name == name:
+#             item.quantity = quantity
+#             return
+#     ingredients_list.append(IngredientWithQuantity(name=name, quantity=quantity))

@@ -1,4 +1,4 @@
-from typing import List, Optional, Literal
+from typing import List, Literal
 from pydantic import BaseModel
 
 OrderType = Literal["Bowl", "Burrito", "Tacos", "Salad", "Quesadilla"]
@@ -13,7 +13,7 @@ class Rice(BaseModel):
 
 class Bean(BaseModel):
     name: Literal["Blank", "Pinto", "None"]
-    quantity = int = 1
+    quantity: int = 1
 
 class Topping(BaseModel):
     name: Literal["Lettuce", "Fajita Veggies", "Mild Salsa", "Medium Salsa", "Hot Salsa", "Corn Salsa", "Cheese", "Sour Cream", "Guacamole"]
@@ -32,13 +32,13 @@ class Entree(BaseModel):
     id: str
     type: OrderType
     protein: List[Protein] = []
-    rice: Optional[List[Rice]] = []
-    beans: Optional[List[Bean]] = []
-    toppings: Optional[List[Topping]] = []
+    rice: List[Rice] = []
+    beans: List[Bean] = []
+    toppings: List[Topping] = []
     quantity: int = 1
 
 class Cart(BaseModel):
-    entree: List[Entree]
-    sides: Optional[List[Side]] = []
-    drinks: Optional[List[Drink]] = []
+    entrees: List[Entree] = []
+    sides: List[Side] = []
+    drinks: List[Drink] = []
 
