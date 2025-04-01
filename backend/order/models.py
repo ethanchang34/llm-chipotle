@@ -1,5 +1,6 @@
 from typing import List, Literal
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
+import uuid
 
 OrderType = Literal["Bowl", "Burrito", "Tacos", "Salad", "Quesadilla"]
 
@@ -29,7 +30,7 @@ class Drink(BaseModel):
     quantity: int = 1
 
 class Entree(BaseModel):
-    id: str
+    id: str = Field(default_factory=lambda: str(uuid.uuid4()))
     type: OrderType
     protein: List[Protein] = []
     rice: List[Rice] = []

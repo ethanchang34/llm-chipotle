@@ -1,9 +1,12 @@
 from typing import Optional
-from models import Cart, Side, Drink
+from models import Cart, Entree, Side, Drink
 import uuid
 
-# Add entree to cart
-# Add side to cart
+def add_entree(cart: Cart, entree: Entree):
+    """Add an entree to the cart"""
+    cart.entrees.append(entree)
+    print(f"Added new entree: {entree.type}")
+    return cart
 
 def add_side(cart: Cart, side: Side):
     """Add a side to the cart"""
