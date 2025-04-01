@@ -10,11 +10,10 @@ def add_side(cart: Cart, side: Side):
     for s in cart.sides:
         if s.name == side.name:
             s.quantity += side.quantity
-            print(f"Increased quantity of side '{s.name}' to {s.quantity}")
-            return cart
-
-    cart.sides.append(side)
-    print(f"Added new side '{side.name}' (x{side.quantity}) to cart.")
+            break
+    else:
+        cart.sides.append(side)
+    print(f"Added '{side.name}' (x{side.quantity}) to cart.")
     return cart
 
 def remove_side(cart: Cart, side: Side):
@@ -26,7 +25,7 @@ def remove_side(cart: Cart, side: Side):
                 cart.sides.remove(s)
                 print(f"Removed side '{side.name}' from cart.")
             else:
-                print(f"Decreased quantity of side '{side.name}' to {s.quantity}")
+                print(f"Decreased quantity of side '{side.name}' by {side.quantity}")
             break
     else:
         print(f"Side '{side.name}' ({side.size}) not found in cart.")
