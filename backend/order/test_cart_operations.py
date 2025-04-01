@@ -1,5 +1,5 @@
 from models import Cart, Drink
-from cart_operations import add_drink, remove_drink
+from cart_operations import add_drink, remove_drink, set_drink_quantity
 
 # Create a blank cart
 cart = Cart(entree=[], drinks=[], sides=[])
@@ -32,3 +32,13 @@ print("--- Cart contents ---")
 for d in cart.drinks:
     print(f"- {d.quantity} {d.size} {d.name}")
 
+# Test setting drink quantity ---------------------------------
+drink = Drink(name="Soda", size="Small", quantity = 1)
+set_drink_quantity(cart, drink)
+
+newDrink = Drink(name="Soda", size="Small", quantity = 0)
+set_drink_quantity(cart, newDrink)
+
+print("--- Cart contents ---")
+for d in cart.drinks:
+    print(f"- {d.quantity} {d.size} {d.name}")
