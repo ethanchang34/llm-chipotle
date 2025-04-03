@@ -2,14 +2,58 @@ from typing import Optional
 from models import Cart, Entree, Side, Drink
 import uuid
 
+
+def view_cart(cart: Cart) -> str:
+    """Return a nicely formatted string representation of the current cart contents."""
+    if not cart.entrees and not cart.sides and not cart.drinks:
+        return "🛒 Your cart is empty."
+
+    lines = ["🛒 Current cart:"]
+    
+    for idx, entree in enumerate(cart.entrees):
+        lines.append(f"[{idx}] 🌯 Entree ({entree.type}) - ID: {entree.id}")
+        if entree.protein:
+            for p in entree.protein:
+                lines.append(f"  🐓 Protein: {p.quantity}x {p.name}")
+        if entree.rice:
+            for r in entree.rice:
+                lines.append(f"  🍚 Rice: {r.quantity}x {r.name}")
+        if entree.beans:
+            for b in entree.beans:
+                lines.append(f"  🫘 Beans: {b.quantity}x {b.name}")
+        if entree.toppings:
+            for t in entree.toppings:
+                lines.append(f"  🧅 Topping: {t.quantity}x {t.name}")
+        lines.append(f"  🔢 Entree quantity: {entree.quantity}")
+    
+    for side in cart.sides:
+        lines.append(f"🥑 Side: {side.quantity}x {side.name}")
+
+    for drink in cart.drinks:
+        lines.append(f"🥤 Drink: {drink.quantity}x {drink.size} {drink.name}")
+
+    return "\n".join(lines)
+
 def add_entree(cart: Cart, entree: Entree):
-    """Add an entree to the cart"""
+    """Add an entree to the cart."""
+    entree.id = str(uuid.uuid4())
     cart.entrees.append(entree)
     print(f"Added new entree: {entree.type}")
     return cart
 
+def remove_entree(cart: Cart, entree_id: str):
+    """Remove an entree from the cart."""
+    for entree in cart.entrees:
+        if entree.id == entree_id:
+            cart.entrees.remove(entree)
+            print(f"Removed entree with ID {entree_id} from the cart.")
+            return cart
+
+    print(f"No entree found with ID {entree_id}. Nothing removed.")
+    return cart
+
 def add_side(cart: Cart, side: Side):
-    """Add a side to the cart"""
+    """Add a side to the cart."""
     for s in cart.sides:
         if s.name == side.name:
             s.quantity += side.quantity

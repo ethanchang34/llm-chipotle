@@ -13,6 +13,7 @@ openai.api_key = os.getenv("OPENAI_API_KEY")
 class CartDeps:
     cart: Cart
 
+
 agent = Agent(
     model="gpt-3.5-turbo-0125",
     deps_type=CartDeps,
@@ -20,6 +21,7 @@ agent = Agent(
     You are a Chipotle ordering assistant. Guide the user in building their order. 
     You can add or modify items in the cart, etc.
     Use your tools when appropriate.
+    To edit or remove an entree, use view_cart to get the correct entree ID.
     """
 )
 
