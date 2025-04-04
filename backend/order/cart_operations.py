@@ -1,5 +1,5 @@
 from typing import Optional
-from models import Cart, Entree, Side, Drink
+from models import Cart, Entree, Protein, Rice, Bean, Topping, Side, Drink
 import uuid
 
 
@@ -51,6 +51,27 @@ def remove_entree(cart: Cart, entree_id: str):
 
     print(f"No entree found with ID {entree_id}. Nothing removed.")
     return cart
+
+def edit_entree(cart: Cart, entree_id: str, updates: Entree) -> Optional[Cart]:
+    """Edit fields of an existing entree in the cart, matching by ID."""
+    for e in cart.entrees:
+        if e.id == entree_id:
+            if updates.type:
+                e.type = updates.type
+            if updates.protein:
+                e.protein = updates.protein
+            if updates.rice:
+                e.rice = updates.rice
+            if updates.beans:
+                e.beans = updates.beans
+            if updates.toppings:
+                e.toppings = updates.toppings
+            if updates.quantity:
+                e.quantity = updates.quantity
+            return cart
+    
+    print(f"No entree found with ID {entree_id}")
+    return None
 
 def add_side(cart: Cart, side: Side):
     """Add a side to the cart."""
@@ -106,6 +127,7 @@ def add_drink(cart: Cart, drink: Drink):
     print(f"Added {drink.quantity} {drink.size} {drink.name}(s) to the cart.")
     return cart
 
+# No function for editting drink size. I wonder if agent will delete and add new size drink.
 def remove_drink(cart: Cart, drink: Drink):
     """Remove a drink from the cart"""
     for d in cart.drinks:
